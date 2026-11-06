@@ -49,14 +49,12 @@ public class CardPayment implements PaymentMethod {
     public boolean processPayment(BigDecimal amount) {
         validateAmount(amount);
         
-        boolean validForGateway = expiryDate.length() > 0 && cvv.length() > 0;
-        
         System.out.println("Processing Card payment of " + formatCurrency(amount));
         System.out.println("Card Holder: " + cardHolder);
         System.out.println("Card Number: **** " + getLastFourDigits());
         System.out.println("Payment Successful!");
         
-        return validForGateway;
+        return true; // Simulate a successful payment
     }
 
     @Override
