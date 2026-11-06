@@ -11,14 +11,20 @@ public class CardPayment implements PaymentMethod {
     private final String cvv;
 
     public CardPayment(String cardNumber, String cardHolder, String expiryDate, String cvv) {
-        String cleanCard = cardNumber.replaceAll("\\s", "");
         
-        // Validate card number
-        if (cleanCard == null || cleanCard.isBlank() || cleanCard.length() < 13 || cleanCard.length() > 19) {
+           // Validate card number
+        if (cardNumber == null || cardNumber.isBlank()) {
+            throw new IllegalArgumentException("Card number cannot be empty");
+        }
+
+        String cleanCard = cardNumber.replaceAll("\\s", "");
+
+        // Validate card number length and digits
+        if (!cleanCard.matches("\\d{13,19}")) {
             throw new IllegalArgumentException("Invalid card number");
         }
-        
-        // Validate card holder
+
+        //Validate card holder
         if (cardHolder == null || cardHolder.isBlank()) {
             throw new IllegalArgumentException("Card holder name is required");
         }
