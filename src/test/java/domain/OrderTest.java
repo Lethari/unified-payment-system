@@ -74,6 +74,19 @@ class OrderTest {
     }
 
     @Test
+    void rejectsBlankCustomerProductAndPaymentData() {
+        assertThrows(IllegalArgumentException.class, () -> new Customer(1, "", "test@example.com"));
+        assertThrows(IllegalArgumentException.class, () -> new Product(1, "Mouse", BigDecimal.ZERO));
+        assertThrows(IllegalArgumentException.class, () -> new Order(1, null));
+        assertThrows(IllegalArgumentException.class, () -> new OrderService().createOrder(null));
+
+        PaymentMethod card = new CardPayment("4242424242424242", "Test User", "12/26", "123");
+        PaymentProcessor processor = new PaymentProcessor();
+        assertThrows(IllegalArgumentException.class, () -> processor.processPayment(null, new BigDecimal("100.00")));
+        assertThrows(IllegalArgumentException.class, () -> processor.processPayment(card, BigDecimal.ZERO));
+    }
+
+    @Test
     void receiptPrinterFormatsOrderSummary() {
         OrderService orderService = new OrderService();
         ReceiptPrinter printer = new ReceiptPrinter();
