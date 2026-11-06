@@ -10,19 +10,29 @@ public class EftPayment implements PaymentMethod {
     private final String accountHolder;
 
     public EftPayment(String bankName, String accountNumber, String accountHolder) {
-        if (bankName == null || bankName.isBlank()) {
-            throw new IllegalArgumentException("Bank name is required");
-        }
-        if (accountNumber == null || accountNumber.length() < 8) {
-            throw new IllegalArgumentException("Invalid account number");
-        }
-        if (accountHolder == null || accountHolder.isBlank()) {
-            throw new IllegalArgumentException("Account holder name is required");
-        }
-        this.bankName = bankName;
-        this.accountNumber = accountNumber.replaceAll("\\s", "");
-        this.accountHolder = accountHolder;
+
+    if (bankName == null || bankName.isBlank()) {
+        throw new IllegalArgumentException("Bank name is required");
     }
+
+    if (accountNumber == null || accountNumber.isBlank()) {
+        throw new IllegalArgumentException("Account number is required");
+    }
+
+    String cleanAccount = accountNumber.replaceAll("\\s", "");
+
+    if (!cleanAccount.matches("\\d{8,15}")) {
+        throw new IllegalArgumentException("Invalid account number");
+    }
+
+    if (accountHolder == null || accountHolder.isBlank()) {
+        throw new IllegalArgumentException("Account holder name is required");
+    }
+
+    this.bankName = bankName;
+    this.accountNumber = cleanAccount;
+    this.accountHolder = accountHolder;
+}
 
     @Override
     public boolean processPayment(BigDecimal amount) {

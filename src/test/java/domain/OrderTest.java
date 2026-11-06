@@ -135,7 +135,7 @@ class OrderTest {
         PaymentMethod card = new CardPayment("4242424242424242", "Test User", "12/26", "123");
         PaymentMethod wallet = new WalletPayment("Zapper", "WALLET123456");
         PaymentMethod cash = new CashOnDelivery();
-        PaymentMethod eft = new EftPayment("1234567890", "Test User", "000123");
+        PaymentMethod eft = new EftPayment("Capitec", "1234567890", "Test User");
 
         assertTrue(card.processPayment(new BigDecimal("12400.00")));
         assertTrue(wallet.processPayment(new BigDecimal("12400.00")));
@@ -156,7 +156,7 @@ class OrderTest {
         PaymentMethod card = new CardPayment("4242424242424242", "Test User", "12/26", "123");
         PaymentMethod wallet = new WalletPayment("Zapper", "WALLET123456");
         PaymentMethod cash = new CashOnDelivery();
-        PaymentMethod eft = new EftPayment("1234567890", "Test User", "000123");
+        PaymentMethod eft = new EftPayment("Capitec", "1234567890", "Test User");
         PaymentProcessor processor = new PaymentProcessor();
 
         assertTrue(processor.processPayment(card, orderTotal));
