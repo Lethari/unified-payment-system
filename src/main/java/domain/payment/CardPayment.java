@@ -11,32 +11,34 @@ public class CardPayment implements PaymentMethod {
     private final String cvv;
 
     public CardPayment(String cardNumber, String cardHolder, String expiryDate, String cvv) {
-        
-           // Validate card number
+
+        // Validate card number
         if (cardNumber == null || cardNumber.isBlank()) {
-            throw new IllegalArgumentException("Card number cannot be empty");
+            throw new IllegalArgumentException("Card number is required");
         }
 
         String cleanCard = cardNumber.replaceAll("\\s", "");
 
-        // Validate card number length and digits
         if (!cleanCard.matches("\\d{13,19}")) {
             throw new IllegalArgumentException("Invalid card number");
         }
 
-        //Validate card holder
+        // Validate card holder
         if (cardHolder == null || cardHolder.isBlank()) {
             throw new IllegalArgumentException("Card holder name is required");
         }
-        
-        // Validate expiry date format MM/YY
-        if (expiryDate == null || !expiryDate.matches("(0[1-9]|1[0-2])/\\d{2}")) {
-            throw new IllegalArgumentException("Expiry date must be in MM/YY format");
+
+        // Validate expiry date format
+        if (expiryDate == null ||
+                !expiryDate.matches("(0[1-9]|1[0-2])/\\d{2}")) {
+            throw new IllegalArgumentException(
+                    "Expiry date must be in MM/YY format");
         }
-        
-        // Validate CVV - 3 or 4 digits for Amex
+
+        // Validate CVV
         if (cvv == null || !cvv.matches("\\d{3,4}")) {
-            throw new IllegalArgumentException("CVV must be 3 or 4 digits");
+            throw new IllegalArgumentException(
+                    "CVV must be 3 or 4 digits");
         }
 
         this.cardNumber = cleanCard;
@@ -48,13 +50,14 @@ public class CardPayment implements PaymentMethod {
     @Override
     public boolean processPayment(BigDecimal amount) {
         validateAmount(amount);
-        
-        System.out.println("Processing Card payment of " + formatCurrency(amount));
+
+        System.out.println("Processing Card payment of "
+                + formatCurrency(amount));
         System.out.println("Card Holder: " + cardHolder);
         System.out.println("Card Number: **** " + getLastFourDigits());
         System.out.println("Payment Successful!");
-        
-        return true; // Simulate a successful payment
+
+        return true; // Simulated payment
     }
 
     @Override
@@ -63,8 +66,10 @@ public class CardPayment implements PaymentMethod {
     }
 
     private void validateAmount(BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
+        if (amount == null ||
+                amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException(
+                    "Amount must be positive");
         }
     }
 
