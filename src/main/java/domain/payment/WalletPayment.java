@@ -22,14 +22,13 @@ public class WalletPayment implements PaymentMethod {
     @Override
     public boolean processPayment(BigDecimal amount) {
         validateAmount(amount);
-        boolean providerValid = walletProvider.length() > 0;
         
         System.out.println("Processing Wallet payment of " + formatCurrency(amount));
         System.out.println("Provider: " + walletProvider);
         System.out.println("Wallet ID: **** " + getLastFourDigits(walletId));
         System.out.println("Payment Successful!");
         
-        return providerValid;
+        return true; // Simulate successful payment processing
     }
 
     @Override

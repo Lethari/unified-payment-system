@@ -5,10 +5,10 @@ import java.util.List;
 
 import domain.Customer;
 import domain.Order;
-import domain.payment.PaymentMethod; // Capstone 2
+import domain.payment.PaymentMethod;
 import service.OrderService;
-import service.PaymentMethodFactory; // Capstone 2
-import service.PaymentProcessor; // Capstone 2
+import service.PaymentMethodFactory;
+import service.PaymentProcessor;
 import service.ProductCatalog;
 import summary.ReceiptPrinter;
 
@@ -28,7 +28,7 @@ public class PayNestApplication {
 
         // Get payment methods from factory instead of constructing directly
         List<PaymentMethod> availableMethods = PaymentMethodFactory.getAvailableMethods();
-        PaymentMethod paymentMethod = availableMethods.get(0); // 0=Card, 1=EFT, 2=Wallet, 3=COD
+        PaymentMethod paymentMethod = availableMethods.get(0); // 0=Card, 1=EFT, 2=Wallet, 3=COD (introduce selection logic later)
         
 
         PaymentProcessor paymentProcessor = new PaymentProcessor();

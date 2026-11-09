@@ -13,8 +13,8 @@ public class EftPayment implements PaymentMethod {
         if (bankName == null || bankName.isBlank()) {
             throw new IllegalArgumentException("Bank name is required");
         }
-        if (accountNumber == null || accountNumber.length() < 8) {
-            throw new IllegalArgumentException("Invalid account number");
+        if (accountNumber == null || accountNumber.replaceAll("\\s", "").length() < 8) {
+            throw new IllegalArgumentException("Invalid account number.");
         }
         if (accountHolder == null || accountHolder.isBlank()) {
             throw new IllegalArgumentException("Account holder name is required");

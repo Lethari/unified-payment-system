@@ -1,6 +1,8 @@
 package domain.payment;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class CardPayment implements PaymentMethod {
@@ -31,8 +33,15 @@ public class CardPayment implements PaymentMethod {
         // Validate expiry date format
         if (expiryDate == null ||
                 !expiryDate.matches("(0[1-9]|1[0-2])/\\d{2}")) {
-            throw new IllegalArgumentException(
-                    "Expiry date must be in MM/YY format");
+            throw new IllegalArgumentException("Expiry date must be in MM/YY format");
+        }
+
+        // Validate that the card is not expired
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
+        YearMonth expiry = YearMonth.parse(expiryDate, formatter);
+
+        if (expiry.isBefore(YearMonth.now())) {
+            throw new IllegalArgumentException("Card has expired");
         }
 
         // Validate CVV
@@ -45,6 +54,14 @@ public class CardPayment implements PaymentMethod {
         this.cardHolder = cardHolder;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
+    }
+
+    public String getExpiryDate() {
+        return expiryDate;
+    }
+
+    public String getCvv() {
+        return cvv;
     }
 
     @Override

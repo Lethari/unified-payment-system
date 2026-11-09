@@ -7,8 +7,11 @@ import domain.Order;
 import domain.OrderItem;
 
 public class ReceiptPrinter {
-
     public void print(Order order) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null.");
+        }
+
         System.out.println("=================================");
         System.out.println(" PAYNEST RECEIPT");
         System.out.println("=================================");
