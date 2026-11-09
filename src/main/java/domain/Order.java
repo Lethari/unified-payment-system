@@ -12,6 +12,9 @@ public class Order {
     private final List<OrderItem> items;
 
     public Order(int id, Customer customer) {
+        if (customer  == null) {
+            throw new IllegalArgumentException("Customer cannot be null");
+        }
         this.id = id;
         this.customer = customer;
         this.items = new ArrayList<>();

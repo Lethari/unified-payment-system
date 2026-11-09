@@ -100,6 +100,11 @@ class OrderTest {
     }
 
     @Test
+    void rejectsNullCustomer() {
+        assertThrows(IllegalArgumentException.class, () -> new Order(101, null));
+    }
+
+    @Test
     void cardPaymentUsesPlainAsciiCurrencyFormatting() {
         CardPayment card = new CardPayment("4242424242424242", "Lethabo", "12/26", "123");
 
