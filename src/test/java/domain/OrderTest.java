@@ -105,6 +105,16 @@ class OrderTest {
     }
 
     @Test
+    void rejectsNullProductInOrderItem() {
+        assertThrows(IllegalArgumentException.class, () -> new OrderItem(null, 2));
+    }
+
+    @Test
+    void rejectsInvalidQuantityInOrderItem() {
+        assertThrows(IllegalArgumentException.class, () -> new OrderItem( new Product(1, "Gaming Headset", new BigDecimal("250.00")), 0));
+    }
+
+    @Test
     void cardPaymentUsesPlainAsciiCurrencyFormatting() {
         CardPayment card = new CardPayment("4242424242424242", "Lethabo", "12/26", "123");
 
