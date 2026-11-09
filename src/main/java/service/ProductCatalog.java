@@ -15,6 +15,10 @@ public class ProductCatalog {
     }
 
     public Product findById(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Product ID must be greater than zero");
+        }
+        
         Product product = products.get(id);
         if (product == null) {
             throw new IllegalArgumentException("Product not found: " + id);

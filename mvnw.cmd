@@ -60,19 +60,6 @@ set ERROR_CODE=0
 @REM ==== START VALIDATION ====
 if not "%JAVA_HOME%" == "" goto OkJHome
 
-@REM If JAVA_HOME is not set, detect the local JDK from a standard installation path.
-if exist "%ProgramFiles%\Java\latest\bin\java.exe" (
-    set "JAVA_HOME=%ProgramFiles%\Java\latest"
-    goto OkJHome
-)
-
-for /d %%D in ("%ProgramFiles%\Java\*") do (
-    if exist "%%~fD\bin\java.exe" (
-        set "JAVA_HOME=%%~fD"
-        goto OkJHome
-    )
-)
-
 echo.
 echo Error: JAVA_HOME not found in your environment. >&2
 echo Please set the JAVA_HOME variable in your environment to match the >&2

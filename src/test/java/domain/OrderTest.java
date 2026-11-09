@@ -16,6 +16,7 @@ import domain.payment.PaymentMethod;
 import domain.payment.WalletPayment;
 import service.OrderService;
 import service.PaymentProcessor;
+import service.ProductCatalog;
 import summary.ReceiptPrinter;
 
 @SuppressWarnings("ThrowableResultIgnored")
@@ -112,6 +113,12 @@ class OrderTest {
     @Test
     void rejectsInvalidQuantityInOrderItem() {
         assertThrows(IllegalArgumentException.class, () -> new OrderItem( new Product(1, "Gaming Headset", new BigDecimal("250.00")), 0));
+    }
+
+    @Test
+    void rejectsInvalidProductIdInCatalog() {
+        ProductCatalog catalog = new ProductCatalog();
+        assertThrows(IllegalArgumentException.class, () -> catalog.findById(0));
     }
 
     @Test
