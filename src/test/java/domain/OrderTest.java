@@ -122,6 +122,21 @@ class OrderTest {
     }
 
     @Test
+    void rejectsInvalidCustomerId() {
+        assertThrows(IllegalArgumentException.class, () -> new Customer(0, "Lethabo", "lethabo@email.com"));
+    }
+
+    @Test
+    void rejectsBlankCustomerName() {
+        assertThrows(IllegalArgumentException.class, () -> new Customer(101, "  ", "lethabo@email.com"));
+    }
+
+    @Test
+    void rejectsBlankCustomerEmail() {
+        assertThrows(IllegalArgumentException.class, () -> new Customer(101, "Lethabo", "  "));
+    }
+
+    @Test
     void cardPaymentUsesPlainAsciiCurrencyFormatting() {
         CardPayment card = new CardPayment("4242424242424242", "Lethabo", "12/26", "123");
 
