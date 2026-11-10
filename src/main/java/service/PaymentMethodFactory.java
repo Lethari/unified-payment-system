@@ -2,11 +2,11 @@ package service;
 
 import java.util.List;
 
-import domain.payment.CardPayment;
-import domain.payment.CashOnDelivery;
-import domain.payment.EftPayment;
-import domain.payment.PaymentMethod;
-import domain.payment.WalletPayment;
+import payment.CardPayment;
+import payment.CashOnDelivery;
+import payment.EftPayment;
+import payment.PaymentMethod;
+import payment.WalletPayment;
 
 public class PaymentMethodFactory {
 

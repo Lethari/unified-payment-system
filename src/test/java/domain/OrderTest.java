@@ -9,11 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
-import domain.payment.CardPayment;
-import domain.payment.CashOnDelivery;
-import domain.payment.EftPayment;
-import domain.payment.PaymentMethod;
-import domain.payment.WalletPayment;
+import payment.CardPayment;
+import payment.CashOnDelivery;
+import payment.EftPayment;
+import payment.PaymentMethod;
+import payment.WalletPayment;
 import service.OrderService;
 import service.PaymentProcessor;
 import service.ProductCatalog;

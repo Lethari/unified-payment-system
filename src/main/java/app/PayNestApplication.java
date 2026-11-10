@@ -5,7 +5,7 @@ import java.util.List;
 
 import domain.Customer;
 import domain.Order;
-import domain.payment.PaymentMethod;
+import payment.PaymentMethod;
 import service.OrderService;
 import service.PaymentMethodFactory;
 import service.PaymentProcessor;

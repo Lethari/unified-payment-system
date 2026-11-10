@@ -1,4 +1,4 @@
-package domain.payment;
+package payment;
 
 import java.math.BigDecimal;
 

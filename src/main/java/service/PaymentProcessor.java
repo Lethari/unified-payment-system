@@ -3,7 +3,7 @@ package service;
 import java.math.BigDecimal;
 import java.util.Locale;
 
-import domain.payment.PaymentMethod;
+import payment.PaymentMethod;
 
 public class PaymentProcessor {
     public boolean processPayment(PaymentMethod method, BigDecimal amount) {
