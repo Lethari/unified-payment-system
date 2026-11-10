@@ -10,7 +10,6 @@ public class CardPayment implements PaymentMethod {
     private final String cardNumber;
     private final String cardHolder;
     private final String expiryDate;
-    private final String cvv;
 
     public CardPayment(String cardNumber, String cardHolder, String expiryDate, String cvv) {
 
@@ -44,7 +43,7 @@ public class CardPayment implements PaymentMethod {
             throw new IllegalArgumentException("Card has expired");
         }
 
-        // Validate CVV
+        // Validate CVV 3 for Visa/MasterCard, 4 for Amex
         if (cvv == null || !cvv.matches("\\d{3,4}")) {
             throw new IllegalArgumentException(
                     "CVV must be 3 or 4 digits");
@@ -53,15 +52,10 @@ public class CardPayment implements PaymentMethod {
         this.cardNumber = cleanCard;
         this.cardHolder = cardHolder;
         this.expiryDate = expiryDate;
-        this.cvv = cvv;
     }
 
     public String getExpiryDate() {
         return expiryDate;
-    }
-
-    public String getCvv() {
-        return cvv;
     }
 
     @Override

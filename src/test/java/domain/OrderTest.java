@@ -3,8 +3,12 @@ package domain;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -138,7 +142,7 @@ class OrderTest {
 
     @Test
     void cardPaymentUsesPlainAsciiCurrencyFormatting() {
-        CardPayment card = new CardPayment("4242424242424242", "Lethabo", "12/26", "123");
+        CardPayment card = new CardPayment("4242424242424242", "Lethabo", validExpiryDate(), "123");
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
@@ -156,7 +160,7 @@ class OrderTest {
 
     @Test
     void checkoutCanUseDifferentPaymentMethods() {
-        PaymentMethod card = new CardPayment("4242424242424242", "Test User", "12/26", "123");
+        PaymentMethod card = new CardPayment("4242424242424242", "Test User", validExpiryDate(), "123");
         PaymentMethod wallet = new WalletPayment("Zapper", "WALLET123456");
         PaymentMethod cash = new CashOnDelivery();
         PaymentMethod eft = new EftPayment("Capitec", "1234567890", "Test User");
@@ -177,7 +181,7 @@ class OrderTest {
         order.addItem(new Product(2, "Controller", new BigDecimal("850.00")), 2);
 
         BigDecimal orderTotal = order.calculateTotal();
-        PaymentMethod card = new CardPayment("4242424242424242", "Test User", "12/26", "123");
+        PaymentMethod card = new CardPayment("4242424242424242", "Test User", validExpiryDate(), "123");
         PaymentMethod wallet = new WalletPayment("Zapper", "WALLET123456");
         PaymentMethod cash = new CashOnDelivery();
         PaymentMethod eft = new EftPayment("Capitec", "1234567890", "Test User");
@@ -187,6 +191,57 @@ class OrderTest {
         assertTrue(processor.processPayment(wallet, orderTotal));
         assertTrue(processor.processPayment(cash, orderTotal));
         assertTrue(processor.processPayment(eft, orderTotal));
+    }
+
+    @Test
+    void paymentProcessorPassesExactOrderTotalToPaymentMethod() {
+        Customer customer = new Customer(101, "Test", "test@example.com");
+        Order order = new Order(6, customer);
+        order.addItem(new Product(1, "Keyboard", new BigDecimal("249.99")), 2);
+        BigDecimal orderTotal = order.calculateTotal();
+        AtomicReference<BigDecimal> receivedAmount = new AtomicReference<>();
+        PaymentMethod method = new PaymentMethod() {
+            @Override
+            public boolean processPayment(BigDecimal amount) {
+                receivedAmount.set(amount);
+                return true;
+            }
+
+            @Override
+            public String getPaymentType() {
+                return "TEST";
+            }
+        };
+
+        assertTrue(new PaymentProcessor().processPayment(method, orderTotal));
+        assertEquals(orderTotal, receivedAmount.get());
+    }
+
+    @Test
+    void paymentProcessorReportsFailureWhenPaymentMethodDeclines() {
+        PaymentMethod method = new PaymentMethod() {
+            @Override
+            public boolean processPayment(BigDecimal amount) {
+                return false;
+            }
+
+            @Override
+            public String getPaymentType() {
+                return "TEST";
+            }
+        };
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        boolean success;
+        try {
+            System.setOut(new PrintStream(outputStream));
+            success = new PaymentProcessor().processPayment(method, new BigDecimal("25.00"));
+        } finally {
+            System.setOut(originalOut);
+        }
+
+        assertFalse(success);
+        assertTrue(outputStream.toString().contains("Payment failed via TEST"));
     }
 
     @Test
@@ -211,6 +266,10 @@ class OrderTest {
     PaymentProcessor processor = new PaymentProcessor();
     PaymentMethod method = new WalletPayment("Zapper", "123456");
     assertThrows(IllegalArgumentException.class, () -> processor.processPayment(method, BigDecimal.valueOf(-100)));
+    }
+
+    private String validExpiryDate() {
+        return YearMonth.now().plusMonths(1).format(DateTimeFormatter.ofPattern("MM/yy"));
     }
 
 }

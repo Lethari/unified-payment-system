@@ -136,7 +136,6 @@ Run the following command to execute the JUnit test suite:
 ### macOS / Linux
 
 ``` bash
-./mvwn test
+./mvnw test
 ```
-
 

@@ -20,6 +20,7 @@ public class Order {
         this.items = new ArrayList<>();
     }
 
+    // Add an item to the order. If the product already exists in the order, increase its quantity.
     public void addItem(Product product, int quantity) {
         if (product == null) {
             throw new IllegalArgumentException("Product cannot be null");
@@ -38,6 +39,7 @@ public class Order {
         items.add(new OrderItem(product, quantity));
     }
 
+    // Calculate the total cost of the order by summing the line totals of all items.
     public BigDecimal calculateTotal() {
         BigDecimal total = BigDecimal.ZERO;
         for (OrderItem item : items) {
