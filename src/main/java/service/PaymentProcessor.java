@@ -16,6 +16,11 @@ public class PaymentProcessor {
         throw new IllegalArgumentException("Payment amount must be greater than zero");
     }
 
+        if (!method.isAvailableFor(amount)) {
+            System.out.println("Payment failed via " + method.getPaymentType());
+            return false;
+        }
+
         boolean success = method.processPayment(amount);
 
         if (success) {

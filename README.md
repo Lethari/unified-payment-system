@@ -1,22 +1,20 @@
 # PayNest Demo
 
 ## Overview
-This demo models a simple customer order flow and prints a receipt after a successful payment. It also demonstrates how interface-based payment rails let the checkout funnel work with any supported payment method without baking payment-specific logic into the checkout or order model.
+
+PayNest is a plain Java checkout demo. It creates an order, prompts the customer to select a payment rail, processes the order total through a shared `PaymentMethod` interface, and prints a receipt after successful payment.
 
 ## Prerequisites
-- Java 21
-- Maven Wrapper included (`mvnw` and `mvnw.cmd`)
-- JUnit 5 for tests
-- Plain Java (No Spring Boot)
 
-## How to Run
+- Java 21
+- Maven Wrapper (`mvnw` and `mvnw.cmd` are included)
+- No payment gateway SDKs or external services are used; payments are simulated.
+
+## Run the application
 
 ### Windows (PowerShell)
 
 ```powershell
-git clone https://github.com/Lethari/unified-payment-system.git
-cd unified-payment-system
-
 .\mvnw.cmd clean package
 java -jar target/merchant-order-desk-and-catalogue-engine-1.0.0-SNAPSHOT.jar
 ```
@@ -24,81 +22,34 @@ java -jar target/merchant-order-desk-and-catalogue-engine-1.0.0-SNAPSHOT.jar
 ### macOS / Linux
 
 ```bash
-git clone https://github.com/Lethari/unified-payment-system.git
-cd unified-payment-system
-
 ./mvnw clean package
 java -jar target/merchant-order-desk-and-catalogue-engine-1.0.0-SNAPSHOT.jar
 ```
 
-## What this demonstrates
-1. Customer and Order domain objects are created.
-2. OrderService adds products to the order.
-3. `PaymentProcessor` sends the calculated order total to a `PaymentMethod` implementation.
-4. `PaymentMethod` implementations: CardPayment, EftPayment, WalletPayment, CashOnDelivery.
-5. ReceiptPrinter prints the order receipt only after payment succeeds.
-6. `PaymentMethodFactory` provides an unmodifiable list of payment methods, allowing the application to select a payment method without directly constructing payment objects.
+The application builds a demo order with a total of R17,300.00 and prompts for a payment method. Enter the number for Card, EFT, or Wallet, or enter `0` to cancel. Cash on Delivery is only offered when the order total is positive and no more than R1,000.00; it is therefore excluded from the default demo order. Invalid selections are rejected. If a payment is declined, checkout returns to the menu so another method can be selected or checkout can be cancelled.
 
+The payment credentials and outcomes are sample data supplied by `PaymentMethodFactory`; this demo does not collect real card, bank, or wallet details.
 
-## Why Interfaces Are Better Than a Single Mega-Method
-Using the `PaymentMethod` interface keeps checkout logic independent of specific payment implementations.
-This allows new payment methods to be introduced without modifying the core checkout logic or adding large `if/else` or `switch` statements.
-Each payment implementation handles its own payment-specific behaviour, while `PaymentProcessor` remains responsible for processing payments.
-This separation improves maintainability, flexibility, and extensibility.
+## Example
 
-## Project Structure
+For the default order, the menu and a successful EFT checkout look like this (the customer enters `2`):
 
 ```text
-unified-payment-system/
-├── src/
-│ ├── main/
-│ │ └── java/
-│ │ ├── app/
-│ │ │ └── PayNestApplication.java
-│ │ ├── domain/
-│ │ │ ├── Customer.java
-│ │ │ ├── Order.java
-│ │ │ ├── OrderItem.java
-│ │ │ └── Product.java
-│ │ ├── payment/
-│ │ │ ├── CardPayment.java
-│ │ │ ├── CashOnDelivery.java
-│ │ │ ├── EftPayment.java
-│ │ │ ├── PaymentMethod.java
-│ │ │ └── WalletPayment.java
-│ │ ├── service/
-│ │ │ ├── OrderService.java
-│ │ │ ├── PaymentMethodFactory.java
-│ │ │ ├── PaymentProcessor.java
-│ │ │ └── ProductCatalog.java
-│ │ └── summary/
-│ │ └── ReceiptPrinter.java
-│ └── test/
-│ └── java/
-│ └── domain/
-│ └── OrderTest.java
-├── mvnw
-├── mvnw.cmd
-├── pom.xml
-└── README.md
-```
-
-## Optional Class Diagram
-
-```text
-             PaymentMethod
-                   |
-       +-----------+-----------+-----------+
-       | | | |
-  CardPayment EftPayment WalletPayment CashOnDelivery
-```
-
-## Expected output
-After running the application, the terminal displays a successful payment message follwed by a formatted receipt.
-
-```text
-Payment successful via CARD
+Choose a payment method:
+1) CARD
+2) EFT
+3) WALLET
+0) Cancel checkout
+Selection: 2
+Processing EFT payment of R17,300.00
+Bank: CAPITEC
+Account Holder: Test Account
+Account Number: **** 7890
+Payment Successful!
+Payment successful via EFT
 Amount: R17,300.00
+
+Checkout complete. Printing receipt...
 
 =================================
  PAYNEST RECEIPT
@@ -113,19 +64,54 @@ TOTAL: R17,300.00
 =================================
 ```
 
-### Testing Different Payment Methods
-To test other payment methods, change the selected index in `PayNestApplication.java` by `PaymentMethodFactory` to:
+## Design
 
-- `.get(0)`   - Card
-- `.get(1)`   - EFT
-- `.get(2)`   - Wallet
-- `.get(3)`   - Cash on Delivery
+`PaymentMethod` defines the common payment contract, including processing an amount, identifying the rail, and reporting whether it is available for that amount. `CardPayment`, `EftPayment`, `WalletPayment`, and `CashOnDelivery` provide the concrete behavior. `PaymentProcessor` checks availability and processes payments through the interface, while `Order` remains responsible for calculating the order total.
 
+This keeps rail-specific behavior out of order arithmetic. Adding a payment rail should require a new `PaymentMethod` implementation and wiring it into the composition root (`PaymentMethodFactory`), rather than changing `Order`.
 
-## Testing
-The project includes tests covering order functionality, payment validation, and related behavior.
+## Project structure
 
-Run the following command to execute the JUnit test suite:
+```text
+unified-payment-system/
+├── src/
+│   ├── main/
+│   │   └── java/
+│   │       ├── app/
+│   │       │   └── PayNestApplication.java
+│   │       ├── domain/
+│   │       │   ├── Customer.java
+│   │       │   ├── Order.java
+│   │       │   ├── OrderItem.java
+│   │       │   └── Product.java
+│   │       ├── payment/
+│   │       │   ├── CardPayment.java
+│   │       │   ├── CashOnDelivery.java
+│   │       │   ├── EftPayment.java
+│   │       │   ├── PaymentMethod.java
+│   │       │   └── WalletPayment.java
+│   │       ├── service/
+│   │       │   ├── OrderService.java
+│   │       │   ├── PaymentMethodFactory.java
+│   │       │   ├── PaymentProcessor.java
+│   │       │   └── ProductCatalog.java
+│   │       └── summary/
+│   │           └── ReceiptPrinter.java
+│   └── test/
+│       └── java/
+│           ├── app/
+│           │   └── PayNestApplicationTest.java
+│           └── domain/
+│               └── OrderTest.java
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+└── README.md
+```
+
+## Tests
+
+The JUnit tests cover order calculations, payment processing, the exact amount passed to a payment method, payment failures, interactive selection and cancellation, and Cash on Delivery's amount eligibility.
 
 ### Windows
 
@@ -135,7 +121,6 @@ Run the following command to execute the JUnit test suite:
 
 ### macOS / Linux
 
-``` bash
+```bash
 ./mvnw test
 ```
-

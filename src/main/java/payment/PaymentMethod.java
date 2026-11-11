@@ -11,8 +11,17 @@ public interface PaymentMethod {
     boolean processPayment(BigDecimal amount);
 
     /**
+     * Indicates whether this payment method is available for the given amount.
+     * @param amount the amount to charge
+     * @return true if this method can be offered for the amount
+     */
+    default boolean isAvailableFor(BigDecimal amount) {
+        return true;
+    }
+
+    /**
      * Get the type of payment for receipts/logs
-     * @return CARD, EFT, WALLET, CASH_ON_DELIVERY etc
+     * @return a stable human-readable label such as Card, EFT, Wallet, or Cash on Delivery
      */
     String getPaymentType();
 }

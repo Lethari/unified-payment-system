@@ -28,7 +28,7 @@ class OrderTest {
 
     @Test
     void calculatesTotalForMultipleItems() {
-        Customer customer = new Customer(101, "Test", "test@example.com");
+        Customer customer = new Customer(101, "Lethabo", "lethabo@email.com");
         Order order = new Order(1, customer);
 
         order.addItem(new Product(1, "PS5", new BigDecimal("15600.00")), 1);
@@ -40,7 +40,7 @@ class OrderTest {
 
     @Test
     void rejectsNullProductAndInvalidQuantity() {
-        Customer customer = new Customer(101, "Test", "test@example.com");
+        Customer customer = new Customer(101, "Lethabo", "lethabo@email.com");
         Order order = new Order(2, customer);
         Product product = new Product(1, "Keyboard", new BigDecimal("250.00"));
 
@@ -54,7 +54,7 @@ class OrderTest {
 
     @Test
     void aggregatesDuplicateProductsIntoOneLine() {
-        Customer customer = new Customer(101, "Test", "test@example.com");
+        Customer customer = new Customer(101, "Lethabo", "lethabo@email.com");
         Order order = new Order(3, customer);
         Product product = new Product(1, "Mouse", new BigDecimal("50.00"));
 
@@ -68,7 +68,7 @@ class OrderTest {
 
     @Test
     void emptyOrderHasZeroTotalAndImmutableItemsView() {
-        Customer customer = new Customer(101, "Test", "test@example.com");
+        Customer customer = new Customer(101, "Lethabo", "lethabo@email.com");
         Order order = new Order(4, customer);
 
         assertEquals(new BigDecimal("0.00"), order.calculateTotal());
@@ -160,42 +160,78 @@ class OrderTest {
 
     @Test
     void checkoutCanUseDifferentPaymentMethods() {
-        PaymentMethod card = new CardPayment("4242424242424242", "Test User", validExpiryDate(), "123");
+        PaymentMethod card = new CardPayment("4242424242424242", "Lethabo", validExpiryDate(), "123");
         PaymentMethod wallet = new WalletPayment("Zapper", "WALLET123456");
         PaymentMethod cash = new CashOnDelivery();
-        PaymentMethod eft = new EftPayment("Capitec", "1234567890", "Test User");
+        PaymentMethod eft = new EftPayment("Capitec", "1234567890", "Lethabo");
 
         assertTrue(card.processPayment(new BigDecimal("12400.00")));
         assertTrue(wallet.processPayment(new BigDecimal("12400.00")));
         assertEquals("CARD", card.getPaymentType());
         assertEquals("WALLET", wallet.getPaymentType());
-        assertEquals("CASH_ON_DELIVERY", cash.getPaymentType());
+        assertEquals("Cash on Delivery", cash.getPaymentType());
         assertEquals("EFT", eft.getPaymentType());
     }
 
     @Test
     void checkoutUsesOrderTotalAndDifferentPaymentMethods() {
-        Customer customer = new Customer(101, "Test", "test@example.com");
+        Customer customer = new Customer(101, "Lethabo", "lethabo@email.com");
         Order order = new Order(5, customer);
         order.addItem(new Product(1, "PS5", new BigDecimal("15600.00")), 1);
         order.addItem(new Product(2, "Controller", new BigDecimal("850.00")), 2);
 
         BigDecimal orderTotal = order.calculateTotal();
-        PaymentMethod card = new CardPayment("4242424242424242", "Test User", validExpiryDate(), "123");
+        PaymentMethod card = new CardPayment("4242424242424242", "Lethabo", validExpiryDate(), "123");
         PaymentMethod wallet = new WalletPayment("Zapper", "WALLET123456");
         PaymentMethod cash = new CashOnDelivery();
-        PaymentMethod eft = new EftPayment("Capitec", "1234567890", "Test User");
+        PaymentMethod eft = new EftPayment("Capitec", "1234567890", "Lethabo");
         PaymentProcessor processor = new PaymentProcessor();
 
         assertTrue(processor.processPayment(card, orderTotal));
         assertTrue(processor.processPayment(wallet, orderTotal));
-        assertTrue(processor.processPayment(cash, orderTotal));
+        assertFalse(processor.processPayment(cash, orderTotal));
         assertTrue(processor.processPayment(eft, orderTotal));
     }
 
     @Test
+    void paymentProcessorDoesNotProcessUnavailablePaymentMethod() {
+        AtomicReference<Boolean> paymentProcessed = new AtomicReference<>(false);
+        PaymentMethod unavailableMethod = new PaymentMethod() {
+            @Override
+            public boolean processPayment(BigDecimal amount) {
+                paymentProcessed.set(true);
+                return true;
+            }
+
+            @Override
+            public boolean isAvailableFor(BigDecimal amount) {
+                return false;
+            }
+
+            @Override
+            public String getPaymentType() {
+                return "UNAVAILABLE";
+            }
+        };
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        boolean success;
+        try {
+            System.setOut(new PrintStream(outputStream));
+            success = new PaymentProcessor().processPayment(
+                    unavailableMethod, new BigDecimal("25.00"));
+        } finally {
+            System.setOut(originalOut);
+        }
+
+        assertFalse(success);
+        assertFalse(paymentProcessed.get());
+        assertTrue(outputStream.toString().contains("Payment failed via UNAVAILABLE"));
+    }
+
+    @Test
     void paymentProcessorPassesExactOrderTotalToPaymentMethod() {
-        Customer customer = new Customer(101, "Test", "test@example.com");
+        Customer customer = new Customer(101, "Lethabo", "lethabo@email.com");
         Order order = new Order(6, customer);
         order.addItem(new Product(1, "Keyboard", new BigDecimal("249.99")), 2);
         BigDecimal orderTotal = order.calculateTotal();
