@@ -158,6 +158,7 @@ class OrderTest {
         assertTrue(!output.contains("R17\u00A0300.00"));
     }
 
+    // Tests that the checkout process can utilize different payment methods.
     @Test
     void checkoutCanUseDifferentPaymentMethods() {
         PaymentMethod card = new CardPayment("4242424242424242", "Lethabo", validExpiryDate(), "123");
@@ -173,6 +174,7 @@ class OrderTest {
         assertEquals("EFT", eft.getPaymentType());
     }
 
+    // Tests that the checkout process uses the correct order total and different payment methods.
     @Test
     void checkoutUsesOrderTotalAndDifferentPaymentMethods() {
         Customer customer = new Customer(101, "Lethabo", "lethabo@email.com");
@@ -193,6 +195,7 @@ class OrderTest {
         assertTrue(processor.processPayment(eft, orderTotal));
     }
 
+    // Tests that the payment processor does not process unavailable payment methods.
     @Test
     void paymentProcessorDoesNotProcessUnavailablePaymentMethod() {
         AtomicReference<Boolean> paymentProcessed = new AtomicReference<>(false);
@@ -229,6 +232,7 @@ class OrderTest {
         assertTrue(outputStream.toString().contains("Payment failed via UNAVAILABLE"));
     }
 
+    // Tests that the payment processor passes the exact order total to the payment method.
     @Test
     void paymentProcessorPassesExactOrderTotalToPaymentMethod() {
         Customer customer = new Customer(101, "Lethabo", "lethabo@email.com");
@@ -253,6 +257,7 @@ class OrderTest {
         assertEquals(orderTotal, receivedAmount.get());
     }
 
+    // Tests that the payment processor reports failure when the payment method declines the payment.
     @Test
     void paymentProcessorReportsFailureWhenPaymentMethodDeclines() {
         PaymentMethod method = new PaymentMethod() {
@@ -280,6 +285,7 @@ class OrderTest {
         assertTrue(outputStream.toString().contains("Payment failed via TEST"));
     }
 
+    //Tests that the payment processor rejects null payment methods.
     @Test
     void rejectsNullPaymentMethod() {
         PaymentProcessor processor = new PaymentProcessor();

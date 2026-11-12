@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 class WalletPaymentTest {
 
+    //Tests that a payment exceeding the wallet balance is declined and does not change the balance.
     @Test
     void declinesPaymentAboveBalanceWithoutChangingBalance() {
         WalletPayment wallet = new WalletPayment(
@@ -21,6 +22,7 @@ class WalletPaymentTest {
         assertEquals(new BigDecimal("50.00"), wallet.getBalance());
     }
 
+    //Tests that a successful payment deducts the correct amount from the wallet balance.
     @Test
     void deductsSuccessfulPaymentFromBalance() {
         WalletPayment wallet = new WalletPayment(

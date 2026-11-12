@@ -21,8 +21,8 @@ import payment.CashOnDelivery;
 import payment.PaymentMethod;
 
 class PayNestApplicationTest {
-    // Test to ensure that when a payment is declined, the user is returned to the menu and can select another payment method.
 
+    // Test to ensure that when a payment is declined, the user is returned to the menu and can select another payment method.
     @Test
     void declinedPaymentReturnsToMenuAndAllowsAnotherMethod() {
         AtomicInteger declinedAttempts = new AtomicInteger();
@@ -61,6 +61,7 @@ class PayNestApplicationTest {
         assertTrue(output.toString().contains("PAYNEST RECEIPT"));
     }
 
+    // Test to ensure that an invalid selection is rejected and the customer can cancel the checkout process.
     @Test
     void invalidSelectionIsRejectedAndCustomerCanCancel() {
         AtomicInteger paymentAttempts = new AtomicInteger();
@@ -85,6 +86,7 @@ class PayNestApplicationTest {
         assertTrue(output.toString().contains("Checkout cancelled."));
     }
 
+    // Test to ensure that the Cash on Delivery payment method is not offered when the order total exceeds R1,000.00.
     @Test
     void cashOnDeliveryIsNotOfferedWhenOrderTotalExceedsOneThousand() {
         PaymentMethod otherMethod = new PaymentMethod() {
@@ -109,6 +111,7 @@ class PayNestApplicationTest {
         assertTrue(output.toString().contains("Checkout cancelled."));
     }
 
+    // Test to ensure that the Cash on Delivery payment method is offered when the order total is R1,000.00 or less.
     @Test
     void cashOnDeliveryIsOfferedWhenOrderTotalIsOneThousand() {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
