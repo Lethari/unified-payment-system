@@ -4,6 +4,8 @@
 
 PayNest is a plain Java checkout demo. It creates an order, prompts the customer to select a payment rail, processes the order total through a shared `PaymentMethod` interface, and prints a receipt after successful payment.
 
+Currency calculations use `BigDecimal` to avoid floating-point rounding errors. The order total is the sum of each item's price multiplied by its quantity.
+
 ## Prerequisites
 
 - Java 21
@@ -43,7 +45,7 @@ Choose a payment method:
 Selection: 2
 Processing EFT payment of R17,300.00
 Bank: CAPITEC
-Account Holder: Test Account
+Account Holder: Lethabo
 Account Number: **** 7890
 Payment Successful!
 Payment successful via EFT
@@ -66,9 +68,9 @@ TOTAL: R17,300.00
 
 ## Design
 
-`PaymentMethod` defines the common payment contract, including processing an amount, identifying the rail, and reporting whether it is available for that amount. `CardPayment`, `EftPayment`, `WalletPayment`, and `CashOnDelivery` provide the concrete behavior. `PaymentProcessor` checks availability and processes payments through the interface, while `Order` remains responsible for calculating the order total.
+`PaymentMethod` defines the common payment contract, including processing an amount, identifying the rail, and reporting whether it is available for that amount. `AbstractPaymentMethod` centralizes positive-amount validation. `CardPayment`, `EftPayment`, `WalletPayment`, and `CashOnDelivery` extend it with rail-specific behavior. The demo wallet starts with a configured balance of R20,000.00, declines payments above that balance, and deducts successful payments. Cash on Delivery retains its own order-total limit. `PaymentProcessor` checks availability and processes payments through the common contract, while `Order` remains responsible for calculating the order total.
 
-This keeps rail-specific behavior out of order arithmetic. Adding a payment rail should require a new `PaymentMethod` implementation and wiring it into the composition root (`PaymentMethodFactory`), rather than changing `Order`.
+This keeps rail-specific behavior out of order arithmetic. Adding a payment rail requires extending `AbstractPaymentMethod` with its rail-specific behavior and wiring it into the composition root (`PaymentMethodFactory`), rather than changing `Order`.
 
 ## Project structure
 
@@ -85,6 +87,7 @@ unified-payment-system/
 │   │       │   ├── OrderItem.java
 │   │       │   └── Product.java
 │   │       ├── payment/
+│   │       │   ├── AbstractPaymentMethod.java
 │   │       │   ├── CardPayment.java
 │   │       │   ├── CashOnDelivery.java
 │   │       │   ├── EftPayment.java
@@ -101,8 +104,10 @@ unified-payment-system/
 │       └── java/
 │           ├── app/
 │           │   └── PayNestApplicationTest.java
-│           └── domain/
-│               └── OrderTest.java
+│           ├── domain/
+│           │   └── OrderTest.java
+│           └── payment/
+│               └── WalletPaymentTest.java
 ├── mvnw
 ├── mvnw.cmd
 ├── pom.xml
@@ -111,7 +116,7 @@ unified-payment-system/
 
 ## Tests
 
-The JUnit tests cover order calculations, payment processing, the exact amount passed to a payment method, payment failures, interactive selection and cancellation, and Cash on Delivery's amount eligibility.
+The JUnit tests cover order calculations, shared amount validation, wallet balance checks and debits, payment failures, interactive selection and cancellation, and Cash on Delivery's amount eligibility.
 
 ### Windows
 

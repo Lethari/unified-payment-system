@@ -5,7 +5,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class CardPayment implements PaymentMethod {
+public class CardPayment extends AbstractPaymentMethod {
 
     private final String cardNumber;
     private final String cardHolder;
@@ -74,14 +74,6 @@ public class CardPayment implements PaymentMethod {
     @Override
     public String getPaymentType() {
         return "CARD";
-    }
-
-    private void validateAmount(BigDecimal amount) {
-        if (amount == null ||
-                amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException(
-                    "Amount must be positive");
-        }
     }
 
     private String getLastFourDigits() {

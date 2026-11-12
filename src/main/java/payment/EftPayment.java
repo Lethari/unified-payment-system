@@ -3,12 +3,18 @@ package payment;
 import java.math.BigDecimal;
 import java.util.Locale;
 
-public class EftPayment implements PaymentMethod {
+public class EftPayment extends AbstractPaymentMethod {
 
     private final String bankName;
     private final String accountNumber;
     private final String accountHolder;
 
+    /**
+     * Constructs an EFT payment method with the specified bank details.
+     * @param bankName      the name of the bank
+     * @param accountNumber the account number
+     * @param accountHolder the name of the account holder
+     */
     public EftPayment(String bankName, String accountNumber, String accountHolder) {
         if (bankName == null || bankName.isBlank()) {
             throw new IllegalArgumentException("Bank name is required");
@@ -40,12 +46,6 @@ public class EftPayment implements PaymentMethod {
     @Override
     public String getPaymentType() {
         return "EFT";
-    }
-
-    private void validateAmount(BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
-        }
     }
 
     private String getLastFourDigits(String acc) {

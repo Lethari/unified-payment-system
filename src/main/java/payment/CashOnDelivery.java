@@ -3,8 +3,11 @@ package payment;
 import java.math.BigDecimal;
 import java.util.Locale;
 
-public class CashOnDelivery implements PaymentMethod {
-    // Cash on Delivery is available for orders up to R1000.00. If the order total exceeds this amount, the payment method will not be available, and the user will be informed accordingly.
+public class CashOnDelivery extends AbstractPaymentMethod {
+    /**
+     * Cash on Delivery is available for orders up to R1000.00. If the order total exceeds this amount,
+     * the payment method will not be available, and the user will be informed accordingly.
+     */
     private static final BigDecimal MAX_ORDER_TOTAL = new BigDecimal("1000.00");
 
     @Override
@@ -31,12 +34,6 @@ public class CashOnDelivery implements PaymentMethod {
     @Override
     public String getPaymentType() {
         return "Cash on Delivery";
-    }
-
-    private void validateAmount(BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
-        }
     }
 
     private String formatCurrency(BigDecimal amount) {

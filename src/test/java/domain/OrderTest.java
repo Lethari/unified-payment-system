@@ -161,7 +161,7 @@ class OrderTest {
     @Test
     void checkoutCanUseDifferentPaymentMethods() {
         PaymentMethod card = new CardPayment("4242424242424242", "Lethabo", validExpiryDate(), "123");
-        PaymentMethod wallet = new WalletPayment("Zapper", "WALLET123456");
+        PaymentMethod wallet = new WalletPayment("Zapper", "WALLET123456", new BigDecimal("20000.00"));
         PaymentMethod cash = new CashOnDelivery();
         PaymentMethod eft = new EftPayment("Capitec", "1234567890", "Lethabo");
 
@@ -182,7 +182,7 @@ class OrderTest {
 
         BigDecimal orderTotal = order.calculateTotal();
         PaymentMethod card = new CardPayment("4242424242424242", "Lethabo", validExpiryDate(), "123");
-        PaymentMethod wallet = new WalletPayment("Zapper", "WALLET123456");
+        PaymentMethod wallet = new WalletPayment("Zapper", "WALLET123456", new BigDecimal("20000.00"));
         PaymentMethod cash = new CashOnDelivery();
         PaymentMethod eft = new EftPayment("Capitec", "1234567890", "Lethabo");
         PaymentProcessor processor = new PaymentProcessor();
@@ -290,7 +290,7 @@ class OrderTest {
     void rejectsZeroPaymentAmount() {
     PaymentProcessor processor = new PaymentProcessor();
 
-    PaymentMethod method = new WalletPayment("Zapper", "123456");
+    PaymentMethod method = new WalletPayment("Zapper", "123456", new BigDecimal("20000.00"));
 
     assertThrows(
             IllegalArgumentException.class,
@@ -300,7 +300,7 @@ class OrderTest {
     @Test
     void rejectsNegativePaymentAmount() {
     PaymentProcessor processor = new PaymentProcessor();
-    PaymentMethod method = new WalletPayment("Zapper", "123456");
+    PaymentMethod method = new WalletPayment("Zapper", "123456", new BigDecimal("20000.00"));
     assertThrows(IllegalArgumentException.class, () -> processor.processPayment(method, BigDecimal.valueOf(-100)));
     }
 
