@@ -1,7 +1,8 @@
 package payment;
 
 import java.math.BigDecimal;
-import java.util.Locale;
+
+import money.RandFormatter;
 
 public class CashOnDelivery extends AbstractPaymentMethod {
     /**
@@ -14,13 +15,12 @@ public class CashOnDelivery extends AbstractPaymentMethod {
     public boolean processPayment(BigDecimal amount) {
         validateAmount(amount);
         if (!isAvailableFor(amount)) {
-            System.out.println("Cash on Delivery is unavailable for amounts above R"
-                    + String.format(Locale.US, "%,.2f", MAX_ORDER_TOTAL));
+            System.out.println("Cash on Delivery is unavailable for amounts above "
+                    + RandFormatter.format(MAX_ORDER_TOTAL));
             return false;
         }
 
-        System.out.println("Order placed with Cash on Delivery.");
-        System.out.println("Amount to be collected: " + formatCurrency(amount));
+        System.out.println("Amount to be collected: " + RandFormatter.format(amount));
         return true;
     }
 
@@ -36,7 +36,8 @@ public class CashOnDelivery extends AbstractPaymentMethod {
         return "Cash on Delivery";
     }
 
-    private String formatCurrency(BigDecimal amount) {
-        return "R" + String.format(Locale.US, "%,.2f", amount);
+    @Override
+    public String getSuccessMessage() {
+        return "Order placed with Cash on Delivery; payment will be collected on delivery.";
     }
 }

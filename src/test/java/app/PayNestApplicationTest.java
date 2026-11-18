@@ -17,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import domain.Customer;
 import domain.Order;
 import domain.Product;
+import payment.CardPayment;
 import payment.CashOnDelivery;
+import payment.EftPayment;
 import payment.PaymentMethod;
 
 class PayNestApplicationTest {
@@ -119,8 +121,28 @@ class PayNestApplicationTest {
         runCheckout("1\n", createOrder("1000.00"),
                 List.of(new CashOnDelivery()), output);
 
-        assertTrue(output.toString().contains("1) Cash on Delivery"));
-        assertTrue(output.toString().contains("Amount to be collected: R1,000.00"));
+        String checkout = output.toString();
+        assertTrue(checkout.contains("1) Cash on Delivery"));
+        assertTrue(checkout.contains("Amount to be collected: R1,000.00"));
+        assertTrue(checkout.contains(
+                "Order placed with Cash on Delivery; payment will be collected on delivery."));
+        assertFalse(checkout.contains("Payment successful via Cash on Delivery"));
+    }
+
+    @Test
+    void cardCheckoutPassesOrderTotalAndPrintsReceiptAfterSuccess() {
+        assertSuccessfulCheckout(
+                new CardPayment("4242424242424242", "Lethabo", "12/30", "123"),
+                "CARD",
+                "Processing Card payment of R25.00");
+    }
+
+    @Test
+    void eftCheckoutPassesOrderTotalAndPrintsReceiptAfterSuccess() {
+        assertSuccessfulCheckout(
+                new EftPayment("CAPITEC", "1234567890", "Lethabo"),
+                "EFT",
+                "Processing EFT payment of R25.00");
     }
 
     private void runCheckout(
@@ -144,5 +166,22 @@ class PayNestApplicationTest {
         Order order = new Order(1, new Customer(101, "Lethabo", "lethabo@email.com"));
         order.addItem(new Product(1, "Item", new BigDecimal(price)), 1);
         return order;
+    }
+
+    private void assertSuccessfulCheckout(
+            PaymentMethod method, String paymentType, String processingMessage) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        runCheckout("1\n", createOrder(), List.of(method), output);
+
+        String checkout = output.toString();
+        assertTrue(checkout.contains(processingMessage));
+        int successIndex = checkout.indexOf("Payment successful via " + paymentType);
+        int receiptIndex = checkout.indexOf("PAYNEST RECEIPT");
+        assertTrue(successIndex >= 0);
+        assertTrue(receiptIndex > successIndex);
+        assertTrue(checkout.contains("TOTAL: R25.00"));
+        assertEquals(1, checkout.split("PAYNEST RECEIPT", -1).length - 1);
+        assertFalse(checkout.contains("Payment Successful!"));
     }
 }

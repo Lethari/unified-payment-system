@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
+
+import money.RandFormatter;
 
 public class Order {
     private final int id;
@@ -69,13 +70,9 @@ public class Order {
         for (OrderItem item : items) {
             sb.append(" - ").append(item.getProduct().getName())
                     .append(" x").append(item.getQuantity())
-                    .append(" = ").append(formatCurrency(item.getLineTotal())).append("\n");
+                    .append(" = ").append(RandFormatter.format(item.getLineTotal())).append("\n");
         }
-        sb.append("Total: ").append(formatCurrency(calculateTotal()));
+        sb.append("Total: ").append(RandFormatter.format(calculateTotal()));
         return sb.toString();
-    }
-
-    private String formatCurrency(BigDecimal amount) {
-        return "R" + String.format(Locale.US, "%,.2f", amount);
     }
 }

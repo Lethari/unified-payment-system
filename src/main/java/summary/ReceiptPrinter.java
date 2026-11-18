@@ -1,10 +1,8 @@
 package summary;
 
-import java.math.BigDecimal;
-import java.util.Locale;
-
 import domain.Order;
 import domain.OrderItem;
+import money.RandFormatter;
 
 public class ReceiptPrinter {
     public void print(Order order) {
@@ -23,15 +21,11 @@ public class ReceiptPrinter {
             System.out.printf("%s x%d %s%n",
                     item.getProduct().getName(),
                     item.getQuantity(),
-                    formatCurrency(item.getLineTotal()));
+                    RandFormatter.format(item.getLineTotal()));
         }
 
         System.out.println("---------------------------------");
-        System.out.println("TOTAL: " + formatCurrency(order.calculateTotal()));
+        System.out.println("TOTAL: " + RandFormatter.format(order.calculateTotal()));
         System.out.println("=================================");
-    }
-
-    private String formatCurrency(BigDecimal amount) {
-        return "R" + String.format(Locale.US, "%,.2f", amount);
     }
 }

@@ -1,7 +1,8 @@
 package payment;
 
 import java.math.BigDecimal;
-import java.util.Locale;
+
+import money.RandFormatter;
 
 public class WalletPayment extends AbstractPaymentMethod {
 
@@ -30,15 +31,14 @@ public class WalletPayment extends AbstractPaymentMethod {
 
         if (!isAvailableFor(amount)) {
             System.out.println("Insufficient wallet balance for "
-                    + formatCurrency(amount));
+                    + RandFormatter.format(amount));
             return false;
         }
 
         balance = balance.subtract(amount);
-        System.out.println("Processing Wallet payment of " + formatCurrency(amount));
+        System.out.println("Processing Wallet payment of " + RandFormatter.format(amount));
         System.out.println("Provider: " + walletProvider);
         System.out.println("Wallet ID: **** " + getLastFourDigits(walletId));
-        System.out.println("Payment Successful!");
 
         return true;
     }
@@ -61,9 +61,5 @@ public class WalletPayment extends AbstractPaymentMethod {
 
     private String getLastFourDigits(String id) {
         return id.length() >= 4 ? id.substring(id.length() - 4) : id;
-    }
-
-    private String formatCurrency(BigDecimal amount) {
-        return "R" + String.format(Locale.US, "%,.2f", amount);
     }
 }

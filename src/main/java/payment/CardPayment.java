@@ -3,7 +3,8 @@ package payment;
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+
+import money.RandFormatter;
 
 public class CardPayment extends AbstractPaymentMethod {
 
@@ -63,10 +64,9 @@ public class CardPayment extends AbstractPaymentMethod {
         validateAmount(amount);
 
         System.out.println("Processing Card payment of "
-                + formatCurrency(amount));
+                + RandFormatter.format(amount));
         System.out.println("Card Holder: " + cardHolder);
         System.out.println("Card Number: **** " + getLastFourDigits());
-        System.out.println("Payment Successful!");
 
         return true; // Simulated payment
     }
@@ -78,9 +78,5 @@ public class CardPayment extends AbstractPaymentMethod {
 
     private String getLastFourDigits() {
         return cardNumber.substring(cardNumber.length() - 4);
-    }
-
-    private String formatCurrency(BigDecimal amount) {
-        return "R" + String.format(Locale.US, "%,.2f", amount);
     }
 }

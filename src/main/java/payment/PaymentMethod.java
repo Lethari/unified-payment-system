@@ -24,4 +24,12 @@ public interface PaymentMethod {
      * @return a stable human-readable label such as Card, EFT, Wallet, or Cash on Delivery
      */
     String getPaymentType();
+
+    /**
+     * Describes the outcome when this method returns a successful result.
+     * @return the success message to display
+     */
+    default String getSuccessMessage() {
+        return "Payment successful via " + getPaymentType();
+    }
 }

@@ -47,7 +47,6 @@ Processing EFT payment of R17,300.00
 Bank: CAPITEC
 Account Holder: Lethabo
 Account Number: **** 7890
-Payment Successful!
 Payment successful via EFT
 Amount: R17,300.00
 
@@ -72,6 +71,37 @@ TOTAL: R17,300.00
 
 This keeps rail-specific behavior out of order arithmetic. Adding a payment rail requires extending `AbstractPaymentMethod` with its rail-specific behavior and wiring it into the composition root (`PaymentMethodFactory`), rather than changing `Order`.
 
+`RandFormatter` keeps Rand amounts consistent across the order, payment rails, processor, and receipt.
+
+The payment relationships are:
+
+```mermaid
+classDiagram
+    class PaymentMethod {
+        <<interface>>
+        +processPayment(amount) boolean
+        +isAvailableFor(amount) boolean
+        +getPaymentType() String
+        +getSuccessMessage() String
+    }
+    class AbstractPaymentMethod
+    class CardPayment
+    class EftPayment
+    class WalletPayment
+    class CashOnDelivery
+    class PaymentProcessor {
+        +processPayment(method, amount) boolean
+    }
+    PaymentMethod <|.. AbstractPaymentMethod
+    AbstractPaymentMethod <|-- CardPayment
+    AbstractPaymentMethod <|-- EftPayment
+    AbstractPaymentMethod <|-- WalletPayment
+    AbstractPaymentMethod <|-- CashOnDelivery
+    PaymentProcessor --> PaymentMethod : processes
+```
+
+Successful Card, EFT, and Wallet transactions report that payment was received. Cash on Delivery instead confirms that the order was placed and the amount will be collected on delivery.
+
 ## Project structure
 
 ```text
@@ -86,6 +116,8 @@ unified-payment-system/
 │   │       │   ├── Order.java
 │   │       │   ├── OrderItem.java
 │   │       │   └── Product.java
+│   │       ├── money/
+│   │       │   └── RandFormatter.java
 │   │       ├── payment/
 │   │       │   ├── AbstractPaymentMethod.java
 │   │       │   ├── CardPayment.java

@@ -1,7 +1,8 @@
 package payment;
 
 import java.math.BigDecimal;
-import java.util.Locale;
+
+import money.RandFormatter;
 
 public class EftPayment extends AbstractPaymentMethod {
 
@@ -34,11 +35,10 @@ public class EftPayment extends AbstractPaymentMethod {
     public boolean processPayment(BigDecimal amount) {
         validateAmount(amount);
         
-        System.out.println("Processing EFT payment of " + formatCurrency(amount));
+        System.out.println("Processing EFT payment of " + RandFormatter.format(amount));
         System.out.println("Bank: " + bankName);
         System.out.println("Account Holder: " + accountHolder);
         System.out.println("Account Number: **** " + getLastFourDigits(accountNumber));
-        System.out.println("Payment Successful!");
         
         return true;
     }
@@ -50,9 +50,5 @@ public class EftPayment extends AbstractPaymentMethod {
 
     private String getLastFourDigits(String acc) {
         return acc.substring(acc.length() - 4);
-    }
-
-    private String formatCurrency(BigDecimal amount) {
-        return "R" + String.format(Locale.US, "%,.2f", amount);
     }
 }
