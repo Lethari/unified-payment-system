@@ -38,6 +38,6 @@ public class CashOnDelivery extends AbstractPaymentMethod {
 
     @Override
     public String getSuccessMessage() {
-        return "Order placed with Cash on Delivery; payment will be collected on delivery.";
+        return "Order placed with Cash on Delivery. Payment will be collected on delivery.";
     }
 }
